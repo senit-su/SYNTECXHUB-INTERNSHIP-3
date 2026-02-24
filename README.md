@@ -1,177 +1,175 @@
-# Reflected XSS Vulnerability Scanner
+---
 
-A lightweight Python-based scanner for detecting reflected Cross-Site Scripting (XSS) vulnerabilities in web applications. Designed for educational purposes and authorized security testing only.
+# Simple Reflected XSS Scanner (Python)
+
+A lightweight Python-based tool that detects **Reflected Cross-Site Scripting (XSS)** vulnerabilities by injecting test payloads into URL query parameters and checking if they are reflected in the HTTP response.
 
 [![Python Version](https://img.shields.io/badge/python-3.6%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Requests](https://img.shields.io/badge/requests-2.25%2B-orange)](https://docs.python-requests.org/)
 
+> ⚠️ For educational and authorized security testing purposes only.
 
-   
-## Legal Disclaimer
-
-**This tool is for educational and authorized testing purposes only.**  
-Unauthorized scanning of websites or applications you do not own or have explicit permission to test is illegal and unethical. The developers assume no liability and are not responsible for any misuse or damage caused by this program.
+---
 
 ## Features
-  
-- **Parameter-Based Scanning**: Automatically identifies and tests URL query parameters
-- **Multiple Payload Testing**: Includes a comprehensive list of common XSS payloads
-- **Reflection Detection**: Checks if injected payloads are reflected in server responses
-- **Automated Reporting**: Generates detailed reports of findings with proof-of-concept payloads
-- **Error Handling**: Gracefully handles connection timeouts and request failures
-- **User Confirmation**: Requires explicit permission confirmation before scanning
 
-## Prerequisites
+* Parses URL query parameters
+* Injects multiple common XSS payloads
+* Sends automated HTTP GET requests
+* Detects reflected input in server responses
+* Generates a structured vulnerability report
+* Includes permission confirmation before scanning
 
-- Python 3.6 or higher
-- `requests` library
+---
+
+## Technologies Used
+
+* Python 3
+* `requests` library
+* `urllib.parse`
+
+---
 
 ## Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/xss-vulnerability-scanner.git
-   cd xss-vulnerability-scanner
-   ```
+### 1️⃣ Clone the Repository
 
-2. **Install required dependencies**
-   ```bash
-   pip install requests
-   ```
+```bash
+git clone https://github.com/your-username/xss-scanner.git
+cd xss-scanner
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
+pip install requests
+```
+
+---
 
 ## Usage
 
-### Basic Usage
+Run the script:
 
-1. **Run the scanner**
-   ```bash
-   python xss_scanner.py
-   ```
-
-2. **Enter the target URL** when prompted
-   ```
-   Enter the full URL with parameters to scan: http://example.com/page?param1=value1&param2=value2
-   ```
-
-3. **Confirm authorization**
-   ```
-   [!] LEGAL NOTICE: You must have explicit permission to test this target.
-   Do you have permission? (yes/no): yes
-   ```
-
-4. **View results** - The scanner will display findings in real-time and save them to `xss_report.txt`
-
-### Example Output
-
-```
-Simple Reflected XSS Scanner
-Use only against authorized targets like DVWA.
-
-Enter the full URL with parameters to scan: http://testphp.vulnweb.com/search.php?test=query
-
-[*] Testing URL: http://testphp.vulnweb.com/search.php?test=query
-    [!] POTENTIAL XSS FOUND on parameter: test
-        Payload: <script>alert('XSS')</script>
-
-[+] Report saved to xss_report.txt
+```bash
+python xss_scanner.py
 ```
 
-### Sample Report (`xss_report.txt`)
+You will be prompted to:
+
+1. Enter a full URL including query parameters
+   Example:
+
+   ```
+   http://localhost/test.php?name=test
+   ```
+
+2. Confirm you have permission to test the target
+
+---
+
+## Example Test Environment
+
+This scanner can be tested safely using:
+
+* **Damn Vulnerable Web Application**
+* A local XAMPP server
+* A simple vulnerable PHP file:
+
+```php
+<?php
+echo $_GET['name'];
+?>
+```
+
+Access via:
+
+```
+http://localhost/test.php?name=test
+```
+
+---
+
+## Sample Output
+
+If a vulnerability is found:
+
+```
+[!] POTENTIAL XSS FOUND on parameter: name
+Payload: <script>alert('XSS')</script>
+```
+
+A report file will be generated:
+
+```
+xss_report.txt
+```
+
+---
+
+## Report Format
 
 ```
 Reflected XSS Vulnerability Report
 ========================================
-URL: http://testphp.vulnweb.com/search.php?test=query
-Vulnerable Parameter: test
+URL: http://localhost/test.php
+Vulnerable Parameter: name
 Proof-of-Concept Payload: <script>alert('XSS')</script>
 --------------------
 ```
 
-## Configuration
-
-### Customizing Payloads
-
-You can modify the `XSS_PAYLOADS` list in the script to add or remove test payloads:
-
-```python
-XSS_PAYLOADS = [
-    "<script>alert('XSS')</script>",
-    "<img src=x onerror=alert(1)>",
-    "javascript:alert('XSS')",
-    # Add your custom payloads here
-]
-```
-
-### Adjusting Request Settings
-
-Modify the request parameters in the `scan_url_for_xss` function:
-
-```python
-# Change timeout (default: 5 seconds)
-response = requests.get(test_url, timeout=10, headers=headers)
-
-# Modify User-Agent
-headers = {'User-Agent': 'Custom-Scanner/1.0'}
-```
-
-## Supported Targets
-
-This scanner is designed for testing against:
-- **DVWA (Damn Vulnerable Web Application)**
-- **bWAPP (Buggy Web Application)**
-- **WebGoat**
-- **Other deliberately vulnerable applications**
-- **Your own web applications** (with proper authorization)
+---
 
 ## How It Works
 
-1. **URL Parsing**: Extracts query parameters from the target URL
-2. **Payload Injection**: Iteratively injects XSS payloads into each parameter
-3. **Request Sending**: Sends HTTP GET requests with modified parameters
-4. **Response Analysis**: Checks if payloads are reflected in the HTML response
-5. **Reporting**: Records vulnerable parameters with proof-of-concept payloads
+1. Parses the provided URL
+2. Extracts query parameters
+3. Injects predefined XSS payloads
+4. Reconstructs the URL with payloads
+5. Sends HTTP requests
+6. Checks if payload appears in response
+7. Logs potential vulnerabilities
+
+---
 
 ## Limitations
 
-- **GET requests only**: Does not test POST parameters or form submissions
-- **Basic reflection detection**: May miss context-aware XSS or DOM-based XSS
-- **No JavaScript execution**: Cannot detect client-side execution of payloads
-- **Limited evasion techniques**: Does not include encoding or filter bypass mechanisms
+* Detects only **Reflected XSS**
+* Does not detect DOM-based XSS
+* No HTML context analysis
+* May produce false positives
+* Does not test POST requests
+
+---
+
+## Legal Disclaimer
+
+This tool is intended for:
+
+* Learning purposes
+* Local lab environments
+* Authorized penetration testing
+
+Do NOT use this tool against websites without explicit written permission.
+
+Unauthorized testing is illegal and unethical.
+
+---
 
 ## Future Improvements
 
-- [ ] Add POST request support
-- [ ] Implement HTML form parsing and submission
-- [ ] Include more sophisticated payload encoding
-- [ ] Add multithreading for faster scanning
-- [ ] Integrate with headless browsers for DOM XSS detection
-- [ ] Create HTML report generation
+* Context-aware detection
+* HTML parsing
+* Support for POST requests
+* Encoded payload detection
+* Multi-threaded scanning
 
-## Contributing
+---
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+## Author
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [OWASP XSS Filter Evasion Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html)
-- [PortSwigger XSS Research](https://portswigger.net/web-security/cross-site-scripting)
-- The Python `requests` library team
-
-## Contact
-
-For questions, suggestions, or issues, please:
-- Open an issue on GitHub
-- Submit a pull request with improvements
+Sara
+Cybersecurity & Python Enthusiast
 
 ---
