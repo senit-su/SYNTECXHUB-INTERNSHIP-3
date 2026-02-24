@@ -169,7 +169,7 @@ Unauthorized testing is illegal and unethical.
 
 ## Author
 
-Sara
+Sarah Binte Tariq
 Cybersecurity & Python Enthusiast
 
 ---
